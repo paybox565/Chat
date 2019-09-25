@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChildren, ViewChild, AfterViewInit, QueryList, ElementRef } from '@angular/core';
-import { MatDialog, MatDialogRef, MatList, MatListItem, MatIcon } from '@angular/material';
+import { MatDialog, MatDialogRef, MatList, MatListItem } from '@angular/material';
 
 import { Action } from './shared/model/action';
 import { Event } from './shared/model/event';
@@ -71,6 +71,15 @@ export class ChatComponent implements OnInit, AfterViewInit {
       id: randomId,
       avatar: `${AVATAR_URL}/${randomId}.png`
     };
+    let data = localStorage.getItem('chat');
+
+    //TODO reset localStorage on disconnect
+    if(data) {
+      console.log(data);
+    }
+    else {
+      localStorage.setItem('chat',JSON.stringify(this.user));
+    }
   }
 
   private initIoConnection(): void {
@@ -129,9 +138,19 @@ export class ChatComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    const currentTime = new Date();
+    let hours: number = currentTime.getHours();
+    let minutes: any = currentTime.getMinutes();
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const timeFormatted = `${hours}:${minutes} ${ampm}`;
+
     this.socketService.send({
       from: this.user,
-      content: message
+      content: message,
+      time: timeFormatted
     });
     this.messageContent = null;
   }
@@ -155,5 +174,14 @@ export class ChatComponent implements OnInit, AfterViewInit {
     }
 
     this.socketService.send(message);
+  }
+
+  public sendMessageFire(event, message){
+    if(event.ctrlKey && event.key === 'Enter') {
+      this.sendMessage(message);
+    }
+    else if(event.key === 'Enter'){
+      this.sendMessage(message);
+    }
   }
 }

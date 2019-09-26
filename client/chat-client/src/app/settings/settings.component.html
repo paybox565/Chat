@@ -1,0 +1,33 @@
+<mat-card>
+  <label id="theme_change">Pick your favorite theme</label>
+  <mat-radio-group
+    aria-labelledby="example-radio-group-label"
+    class="example-radio-group"
+    [(ngModel)]="settings.theme"
+    (change)="updateSettings()">
+    <mat-radio-button class="example-radio-button" *ngFor="let theme of themes" [value]="theme">
+      {{theme}}
+    </mat-radio-button>
+  </mat-radio-group>
+  <label id="clock_format">Clock display</label>
+  <mat-radio-group
+    aria-labelledby="example-radio-group-label"
+    class="example-radio-group"
+    [(ngModel)]="settings.clock"
+    (change)="updateSettings()">
+    <mat-radio-button class="example-radio-button" *ngFor="let format of clock" [value]="format">
+      {{format}}
+    </mat-radio-button>
+  </mat-radio-group>
+  <label id="send_combination">Send messages on CTRL+ENTER</label>
+  <mat-radio-group
+    aria-labelledby="example-radio-group-label"
+    class="example-radio-group"
+    [(ngModel)]="settings.combination"
+    (change)="updateSettings()">
+    <mat-radio-button class="example-radio-button" *ngFor="let combination of combinations" [value]="combination">
+      {{combination}}
+    </mat-radio-button>
+  </mat-radio-group>
+</mat-card>
+

@@ -15,7 +15,7 @@ export class MessagesService {
     return this.myMessages;
   }
 
-  public addMessage(message:Message) {
-    this.myMessages.push(message);
+  public addMessages(messages:Message[]) {
+    messages.forEach(item=>this.myMessages.push(item));
   }
 }

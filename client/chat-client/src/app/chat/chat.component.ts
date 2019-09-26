@@ -94,7 +94,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
         previousUsername: undefined,
         username: 'hello'
       };
-      this.sendNotification(paramsDialog, Action.JOINED);
     }
     else {
       this.user = {
@@ -121,7 +120,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.socketService.onEvent(Event.DISCONNECT)
       .subscribe(() => {
         console.log('disconnected');
-        //this.messagesService.addMessage(this.messages[1]);
       });
   }
 

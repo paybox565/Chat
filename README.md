@@ -21,7 +21,7 @@ $ npm start
 Open other command line window:
 
 ```bash
-$ cd client
+$ cd client/chat-client
 $ npm install
 $ ng serve
 ```

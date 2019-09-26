@@ -11,17 +11,33 @@ export class SettingsComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.settings = {
-      clock: '12H',
-      combination: 'Enter',
-      theme: 'Light'
+    let data = localStorage.getItem('chatSettings');
+
+    if(data){
+      this.currentSettings = JSON.parse(data);
+      this.settings = {
+        clock: this.currentSettings.clock,
+        combination: this.currentSettings.combination,
+        theme: this.currentSettings.theme
+      }
+    }
+    else {
+      this.settings = {
+        clock: '12H',
+        combination: 'Off',
+        theme: 'Light'
+      }
     }
   }
 
-
   settings: Settings;
+  currentSettings: Settings;
   themes: string[] = ['Light', 'Dark'];
   clock: string[] = ['12H', '24H'];
-  combinations: string[] = ['Enter', 'Ctrl + Enter'];
+  combinations: string[] = ['On', 'Off'];
+
+  updateSettings(){
+    localStorage.setItem('chatSettings',JSON.stringify(this.settings));
+  }
 
 }

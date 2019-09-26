@@ -20,6 +20,7 @@ const AVATAR_URL = 'https://api.adorable.io/avatars/285';
 export class ChatComponent implements OnInit, AfterViewInit {
   action = Action;
   user: User;
+  currentUser: User;
   messages: Message[] = [];
   messageContent: string;
   ioConnection: any;
@@ -43,10 +44,16 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initModel();
-    // Using timeout due to https://github.com/angular/angular/issues/14748
-    setTimeout(() => {
-      this.openUserPopup(this.defaultDialogUserParams);
-    }, 0);
+    let data = localStorage.getItem('chat');
+    if(!data){
+      setTimeout(() => {
+        this.openUserPopup(this.defaultDialogUserParams);
+      }, 0);
+    }
+
+    // setTimeout(() => {
+    //   this.openUserPopup(this.defaultDialogUserParams);
+    // }, 0);
   }
 
   ngAfterViewInit(): void {
@@ -56,8 +63,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // auto-scroll fix: inspired by this stack overflow post
-  // https://stackoverflow.com/questions/35232731/angular2-scroll-to-bottom-chat-style
   private scrollToBottom(): void {
     try {
       this.matList.nativeElement.scrollTop = this.matList.nativeElement.scrollHeight;
@@ -67,18 +72,29 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   private initModel(): void {
     const randomId = this.getRandomId();
-    this.user = {
-      id: randomId,
-      avatar: `${AVATAR_URL}/${randomId}.png`
-    };
+
     let data = localStorage.getItem('chat');
 
-    //TODO reset localStorage on disconnect
     if(data) {
-      console.log(data);
+      this.currentUser = JSON.parse(data);
+      this.user = {
+        id: this.currentUser.id,
+        avatar: this.currentUser.avatar,
+        name: this.currentUser.name
+      };
+      this.initIoConnection();
+      let paramsDialog = {
+        dialogType: 0,
+        previousUsername: undefined,
+        username: 'hello'
+      };
+      this.sendNotification(paramsDialog, Action.JOINED);
     }
     else {
-      localStorage.setItem('chat',JSON.stringify(this.user));
+      this.user = {
+        id: randomId,
+        avatar: `${AVATAR_URL}/${randomId}.png`
+      };
     }
   }
 
@@ -130,6 +146,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
       } else if (paramsDialog.dialogType === DialogUserType.EDIT) {
         this.sendNotification(paramsDialog, Action.RENAME);
       }
+      localStorage.setItem('chat',JSON.stringify(this.user));
     });
   }
 

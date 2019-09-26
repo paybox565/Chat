@@ -6,6 +6,7 @@ import { Event } from './shared/model/event';
 import { Message } from './shared/model/message';
 import { User } from './shared/model/user';
 import { SocketService } from './shared/services/socket.service';
+import {MessagesService} from "../messages.service";
 import { DialogUserComponent } from './dialog-user/dialog-user.component';
 import { DialogUserType } from './dialog-user/dialog-user-type';
 
@@ -39,7 +40,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   // getting a reference to the items/messages within the list
   @ViewChildren(MatListItem, { read: ElementRef }) matListItems: QueryList<MatListItem>;
 
-  constructor(private socketService: SocketService,
+  constructor(private socketService: SocketService, private messagesService: MessagesService,
               public dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -50,10 +51,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
         this.openUserPopup(this.defaultDialogUserParams);
       }, 0);
     }
+    else {
+      this.messages = this.messagesService.getMyMessages();
+    }
 
-    // setTimeout(() => {
-    //   this.openUserPopup(this.defaultDialogUserParams);
-    // }, 0);
+
   }
 
   ngAfterViewInit(): void {
@@ -61,6 +63,10 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.matListItems.changes.subscribe(elements => {
       this.scrollToBottom();
     });
+  }
+
+  ngOnDestroy():void {
+    this.ioConnection.unsubscribe();
   }
 
   private scrollToBottom(): void {
@@ -115,6 +121,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.socketService.onEvent(Event.DISCONNECT)
       .subscribe(() => {
         console.log('disconnected');
+        //this.messagesService.addMessage(this.messages[1]);
       });
   }
 
